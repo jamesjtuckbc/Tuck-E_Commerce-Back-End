@@ -9,6 +9,9 @@ router.get('/', async (req, res) => {
     const productsData = await Product.findAll({
       include: [Category,{model: Tag, through: ProductTag}],
     });
+    if(!productsData) {
+      res.status(404).json({ message: 'No Products Found!'});
+    }
     res.status(200).json(productsData);
   } catch (err) {
     res.status(500).json(err);
@@ -23,6 +26,9 @@ router.get('/:id', async (req, res) => {
     const productsData = await Product.findByPk(req.params.id, {
       include: [Category,{model: Tag, through: ProductTag}],
     });
+    if(!productsData) {
+      res.status(404).json({ message: `Products ID: ${req.params.id} Not Found!`});
+    }
     res.status(200).json(productsData);
   } catch (err) {
     res.status(500).json(err);
@@ -50,6 +56,7 @@ router.post('/', async (req, res) => {
             product_id: product.id,
             tag_id,
           };
+          
         });
         return ProductTag.bulkCreate(productTagIdArr);
       }
@@ -112,7 +119,10 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id,
       }
     });
-    res.status(200).json(productsData);
+    if(!productsData) {
+      res.status(404).json({ message: 'No Products Found, Nothing Deleted!'});
+    }
+    res.status(200).json({ message: `Product ID: ${req.params.id} Deleted!`});
   } catch (err) {
     res.status(500).json(err);
   };

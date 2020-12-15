@@ -8,6 +8,9 @@ router.get('/', async (req, res) => {
     const categoryData = await Category.findAll({
       include: [Product],
     });
+    if(!categoryData) {
+      res.status(404).json({ message: 'No Categories Found!'});
+    }
     res.status(200).json(categoryData);
   } catch (err) {
     res.status(500).json(err);
@@ -21,6 +24,9 @@ router.get('/:id', async (req, res) => {
     const categoryData = await Category.findByPk(req.params.id, {
       include: [Product],
     });
+    if(!categoryData) {
+      res.status(404).json({ message: `Category ID: ${req.params.id} Not Found!`});
+    }
     res.status(200).json(categoryData);
   } catch (err) {
     res.status(500).json(err);
@@ -48,6 +54,9 @@ router.put('/:id', async (req, res) => {
         id: req.params.id,
       },
     });
+    if(!categoryData[0]) {
+      res.status(404).json({ message: `Category ID: ${req.params.id} Not Found, No Update Made`});
+    }
     res.status(200).json(categoryData);
   } catch (err) {
     res.status(500).json(err);
@@ -62,7 +71,10 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id,
       }
     });
-    res.status(200).json(categoryData);
+    if(!categoryData) {
+      res.status(404).json({ message: 'No Categories Found, Nothing Deleted!'});
+    }
+    res.status(200).json({ message: `Category ID: ${req.params.id} Deleted!`});
   } catch (err) {
     res.status(500).json(err);
   };
